@@ -1,0 +1,58 @@
+- hosts: webserver
+  become: yes
+  become_method: sudo
+  vars_files:
+    - vars/apache.yml
+  
+  tasks:
+    - name: Update system
+      apt: 
+        update_cache: yes 
+        state: latest 
+        force_apt_get: yes
+      loop: [ 'aptitude' ]
+
+    - name: install apache2 di Ubuntu
+      become: yes
+      apt:
+        name: apache2 
+        update_cache: yes 
+        state: present
+    
+    - name: Create Document Root
+      file:
+        path: "/var/www/html/gunawan"
+        state: directory
+        owner: "devops"
+        mode: '0755'
+    
+    - name: copy index test page
+      template:
+        src: "files/index.html.j2"
+        dest: "/var/www/html/gunawan/index.html"
+
+    - name: set up Apache virtualhost
+      template:
+        src: "files/apache2.conf.j2"
+        dest: "/etc/apache2/sites-available/gunawan.conf"
+      
+    - name: Enable new site
+      shell: /usr/sbin/a2ensite gunawan.conf
+      notify: Reload Apache2
+
+    - name: Disable default apache site
+      shell: /usr/sbin/a2dissite 000-default.conf
+      when: disable_default
+      notify: Reload Apache2
+      
+  handlers:
+    - name: restart apache2
+      service:
+        name: apache2
+        state: restarted
+
+    - name: Reload Apache2
+      service:
+        name: apache2
+        state: reloaded
+  
