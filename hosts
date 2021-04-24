@@ -2,5 +2,5 @@
 ansible_become_pass=zxcvbn
 
 [webserver]
-202.173.66.120 ansible_user=devops ansible_port=8522 ansible_ssd_private_key_file=~/.ssh/id.rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+192.168.1.1 ansible_user=devops ansible_port=8522 ansible_ssd_private_key_file=~/.ssh/id.rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
